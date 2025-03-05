@@ -1,21 +1,24 @@
 <body>
+
+  {% extends 'base.html' %}
+  {% block content %}
     <div class = "container">
         {% for new in news %}
         <div class="card mb-3">
             <div class="row g-0">
               <div class="col-md-8">
                 <div class="card-body">
-                    
                         <h2>{{ new.headline }}</h2>
                         <h5>{{ new.date }}</h5>
                         <p>{{ new.body }}</p>
-                    
                 </div>
               </div>
             </div>
         </div> 
         {% endfor %}
     </div>
+  {% endblock content %}
+    
 </body>
 
 
