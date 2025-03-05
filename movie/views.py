@@ -97,3 +97,7 @@ def statistics_view(request):
 
     # Renderizar la plantilla con la gráfica
     return render(request, 'statistics.html', {'graphic': graphic, 'graphic2':graphic2})
+
+def signup(request):
+    email = request.GET.get('email')
+    return render(request, 'signup.html', {'email':email})
