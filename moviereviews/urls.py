@@ -24,7 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', vistaMovie.home, name = 'home'),
     path('about/', vistaMovie.about),
-    path('news/', include('news.urls'), name = 'news')
+    path('news/', include('news.urls'), name = 'news'),
+    path('statistics/', vistaMovie.statistics_view, name='statistics'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
