@@ -2,7 +2,10 @@ from django.shortcuts import render
 from django.db.models import Q
 from django.http import HttpResponse
 from .models import Movie
-
+from openai import OpenAI
+import numpy as np
+import os
+from dotenv import load_dotenv
 
 #nuevos imports de el workshop 2 
 
@@ -101,3 +104,41 @@ def statistics_view(request):
 def signup(request):
     email = request.GET.get('email')
     return render(request, 'signup.html', {'email':email})
+
+
+
+
+def recommendation(request):
+    searchTerm = request.GET.get('searchMovie')
+    best_movie = None
+    if(searchTerm):
+        # Cargar la API Key
+        load_dotenv('api_key.env')
+        client = OpenAI(api_key=os.environ.get('openai_api_key'))
+
+
+        # Función para calcular similitud de coseno
+        def cosine_similarity(a, b):
+            return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+        # Recibir el prompt del usuario (esto se debe recibir desde el formulario de la app)
+        prompt = searchTerm
+
+        # Generar embedding del prompt
+        response = client.embeddings.create(
+            input=[prompt],
+            model="text-embedding-3-small"
+        )
+        prompt_emb = np.array(response.data[0].embedding, dtype=np.float32)
+
+        # Recorrer la base de datos y comparar
+        max_similarity = -1
+
+        for movie in Movie.objects.all():
+            movie_emb = np.frombuffer(movie.emb, dtype=np.float32)
+            similarity = cosine_similarity(prompt_emb, movie_emb)
+
+            if similarity > max_similarity:
+                max_similarity = similarity
+                best_movie = movie
+    return render(request, 'recommendation.html', {'recommended_movie':best_movie})
